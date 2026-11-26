@@ -1,0 +1,28 @@
+name: Bootstrap repository (one-time)
+
+on:
+  push:
+    paths: ['.github/workflows/bootstrap.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack project source and commit
+        run: |
+          tar -xzf nexus-source.tar.gz --exclude='./.github'
+          git rm -q nexus-source.tar.gz
+          git add -A
+          git -c user.name="${{ github.actor }}" \
+              -c user.email="${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com" \
+              commit -q -F - <<'MSG'
+          Initialize NEXUS Enterprise: architecture, monorepo, platform-common, identity-service
+
+          Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+          Claude-Session: https://claude.ai/code/session_01CEYmjj3fg6ixAKwVhzoehG
+          MSG
+          git push
