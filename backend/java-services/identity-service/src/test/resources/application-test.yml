@@ -1,0 +1,10 @@
+nexus:
+  identity:
+    issuer: http://identity.test
+    rate-limit:
+      requests-per-minute: 10000
+    scheduling:
+      enabled: false
+logging:
+  level:
+    org.testcontainers: WARN

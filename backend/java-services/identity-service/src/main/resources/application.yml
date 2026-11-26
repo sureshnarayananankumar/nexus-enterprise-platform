@@ -1,0 +1,76 @@
+server:
+  port: ${SERVER_PORT:8081}
+  shutdown: graceful
+  error:
+    include-stacktrace: never
+
+spring:
+  application:
+    name: identity-service
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/identity_db}
+    username: ${DB_USERNAME:nexus}
+    password: ${DB_PASSWORD:nexus}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      service: identity-service
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+nexus:
+  identity:
+    issuer: ${NEXUS_JWT_ISSUER:http://localhost:8081}
+    access-token-ttl: ${NEXUS_ACCESS_TOKEN_TTL:15m}
+    refresh-token-ttl: ${NEXUS_REFRESH_TOKEN_TTL:14d}
+    max-failed-attempts: 5
+    lock-duration: 15m
+    rate-limit:
+      requests-per-minute: ${NEXUS_AUTH_RATE_LIMIT:20}
+    jwt:
+      key-id: ${NEXUS_JWT_KEY_ID:nexus-dev-key}
+      private-key: ${NEXUS_JWT_PRIVATE_KEY:}
+      public-key: ${NEXUS_JWT_PUBLIC_KEY:}
+    cors:
+      allowed-origins: ${NEXUS_CORS_ORIGINS:http://localhost:4200,http://localhost:5173}
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{tenantId:-}]"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
