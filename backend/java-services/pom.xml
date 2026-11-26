@@ -26,6 +26,8 @@
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <springdoc.version>2.6.0</springdoc.version>
+    <!-- 1.21.4+ negotiates the Docker API version required by Docker Engine 29 (GitHub runners) -->
+    <testcontainers.version>1.21.4</testcontainers.version>
   </properties>
 
   <dependencyManagement>
